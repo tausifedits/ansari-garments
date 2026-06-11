@@ -1,0 +1,21 @@
+{
+  "name": "ansari-garments",
+  "version": "1.0.0",
+  "description": "Premium Garments Digital Showroom Backend & Synchronized Admin Dashboard",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.5.0",
+    "mongoose": "^8.3.1",
+    "multer": "^1.4.5-lts.1",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^9.1.8"
+  }
+}

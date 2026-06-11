@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ansari Garments | Premium Menswear Digital Showroom</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Explore the curated, premium menswear collection at Ansari Garments, Ramkola. A luxury fashion showroom experience featuring the interactive 3D Outfit Builder.">
+  <meta name="keywords" content="Ansari Garments, Ramkola, Menswear, Premium Clothing, Fashion Showroom, 3D Outfit Builder, Luxury Shirts, Wide Fit Jeans">
+  <meta name="author" content="Ansari Garments">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="Ansari Garments | Premium Menswear Digital Showroom">
+  <meta property="og:description" content="Explore the curated, premium menswear collection at Ansari Garments, Ramkola. Try on outfits dynamically with the 3D Outfit Builder.">
+  <meta property="og:type" content="website">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#F7F5F2',
+              card: '#FFFFFF',
+              primary: '#1F2937',
+              secondary: '#6B7280',
+              accent: '#B08968',
+            }
+          },
+          fontFamily: {
+            heading: ['Cormorant Garamond', 'serif'],
+            body: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Style overrides -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- ThreeJS and Libraries CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  
+  <!-- GSAP Animation Library CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body class="bg-brand-bg font-body text-brand-primary">
+
+  <!-- 1. Sticky Navigation -->
+  <nav class="fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-brand-primary/5 glass-panel py-4 px-6 md:px-12 flex justify-between items-center">
+    <div class="flex items-baseline space-x-6">
+      <a href="#" class="font-heading text-xl md:text-2xl font-bold tracking-[0.15em] uppercase text-brand-primary">
+        Ansari Garments
+      </a>
+      <span class="hidden md:inline text-xs tracking-widest uppercase text-brand-secondary">
+        Ramkola, UP
+      </span>
+    </div>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex space-x-10 text-xs font-semibold tracking-[0.2em] uppercase">
+      <a href="#showroom-track" class="hover:text-brand-accent transition">Collection</a>
+      <a href="#craftsmanship" class="hover:text-brand-accent transition">Craftsmanship</a>
+      <a href="#visit-store" class="hover:text-brand-accent transition">Visit Store</a>
+    </div>
+
+    <!-- Right Menu / Contacts -->
+    <div class="hidden lg:flex items-center space-x-8 text-xs font-semibold tracking-wider">
+      <a href="https://goo.gl/maps/kasia-road-ramkola" target="_blank" class="hover:text-brand-accent transition flex items-center gap-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Location
+      </a>
+      <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="hover:text-brand-accent transition flex items-center gap-1">
+        Instagram
+      </a>
+      <a href="https://wa.me/9044506599" target="_blank" class="px-4 py-2 bg-brand-primary text-white hover:bg-brand-accent transition duration-300">
+        WhatsApp Enquiry
+      </a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="md:hidden text-brand-primary focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </nav>
+
+  <!-- Mobile Dropdown Menu -->
+  <div id="mobile-menu" class="hidden fixed top-[65px] left-0 w-full z-40 bg-brand-bg border-b border-brand-primary/10 flex flex-col p-6 space-y-4 text-sm font-semibold tracking-widest uppercase">
+    <a href="#showroom-track" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="py-2 hover:text-brand-accent">Collection</a>
+    <a href="#craftsmanship" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="py-2 hover:text-brand-accent">Craftsmanship</a>
+    <a href="#visit-store" onclick="document.getElementById('mobile-menu').classList.add('hidden')" class="py-2 hover:text-brand-accent">Visit Store</a>
+    <hr class="border-brand-primary/10">
+    <div class="flex justify-between py-2 text-xs">
+      <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="hover:text-brand-accent">Instagram</a>
+      <a href="https://wa.me/9044506599" target="_blank" class="text-brand-accent font-bold">WhatsApp</a>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       STICKY SHOWROOM TRACK (Sections 1, 2)
+       ========================================== -->
+  <div class="relative w-full h-[200vh] bg-brand-bg" id="showroom-track">
+    
+
+
+    <!-- Sticky 2D Floating Garments Visual Stage -->
+    <div class="sticky top-0 left-0 w-full h-screen z-10 flex items-center justify-center pointer-events-none showroom-stage">
+      <div id="active-garment-container" class="w-full h-[65vh] md:h-[75vh] max-h-[500px] max-w-[450px] relative pointer-events-none flex items-center justify-center float-item">
+        <!-- Floating Active Shirt (Top Wear) -->
+        <img id="active-shirt" src="" alt="Active Shirt" class="absolute w-[80%] h-[80%] object-contain transition-all duration-500 opacity-0 transform translate-y-[-20px] pointer-events-none">
+        <!-- Floating Active Pant (Bottom Wear) -->
+        <img id="active-pant" src="" alt="Active Pant" class="absolute w-[80%] h-[80%] object-contain transition-all duration-500 opacity-0 transform translate-y-[20px] pointer-events-none">
+      </div>
+    </div>
+
+    <!-- SECTION 1: HERO EXPERIENCE (Scroll depth 0vh to 100vh) -->
+    <div id="hero-section" class="absolute top-0 left-0 w-full h-screen z-20 flex flex-col justify-between p-6 md:p-12 pt-28 pb-8 pointer-events-none">
+      
+      <!-- Hero Top Heading -->
+      <div class="w-full text-center md:text-left animate-on-scroll">
+        <span class="luxury-badge">Premium Showroom</span>
+        <h1 class="font-heading text-4xl md:text-6xl font-light tracking-wide mt-2 text-brand-primary">
+          Curated Modernity
+        </h1>
+        <p class="font-body text-xs md:text-sm text-brand-secondary tracking-widest uppercase mt-2">
+          Ansari Garments — Kasia Road, Ramkola
+        </p>
+      </div>
+
+      <!-- Main Layout: Left Product Selector, Right Product Info -->
+      <div class="flex justify-between items-end w-full pb-8">
+        
+        <!-- Left Column: Dial -->
+        <div class="showroom-left-col flex flex-col space-y-4 pointer-events-auto w-full max-w-[280px] z-30">
+          
+          <!-- Circular Dial Selector -->
+          <div class="dial-container">
+            <div class="dial-pivot" id="topwear-dial">
+              <!-- JS will inject .dial-item elements here -->
+            </div>
+            <!-- Category Title inside Dial -->
+            <div class="dial-category-label">
+              <span class="font-heading text-sm md:text-lg font-light tracking-widest uppercase text-brand-primary whitespace-nowrap">Top Wear</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Side: Elegant Sidebar Details Panel -->
+        <div class="showroom-right-col w-full max-w-md md:max-w-sm md:ml-auto md:mr-0 glass-panel p-6 shadow-xl border border-white/40 pointer-events-auto z-30">
+          <div class="flex flex-col gap-4">
+            <div>
+              <span class="text-xs uppercase tracking-widest text-brand-accent font-semibold font-body block" id="hero-fabric">Heavy Premium Canvas</span>
+              <h2 class="font-heading text-2xl md:text-3xl font-light mt-1" id="hero-title">Beige Workwear Jacket</h2>
+            </div>
+            <p class="text-xs text-brand-secondary font-body leading-relaxed" id="hero-desc">
+              A clean structural workwear piece in premium neutral washed canvas.
+            </p>
+            <div class="flex justify-between items-center mt-2">
+              <span class="font-heading text-2xl font-semibold text-brand-primary" id="hero-price">₹2,899</span>
+              <div class="flex space-x-1.5" id="hero-sizes">
+                <!-- Sizes filled by JS -->
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-6 border-t border-brand-primary/5 pt-4">
+            <a id="hero-enquire-btn" href="#" target="_blank" class="w-full text-center py-2.5 bg-brand-primary text-white text-xs font-semibold tracking-widest uppercase hover:bg-brand-accent transition duration-300">
+              Enquire
+            </a>
+            <button id="hero-reserve-btn" class="w-full py-2.5 border border-brand-primary text-brand-primary text-xs font-semibold tracking-widest uppercase hover:bg-brand-primary hover:text-white transition duration-300">
+              Reserve
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 2: BOTTOMWEAR SHOWCASE (Scroll depth 100vh to 200vh) -->
+    <div id="bottomwear-section" class="absolute top-[100vh] left-0 w-full h-screen z-20 flex flex-col justify-between p-6 md:p-12 pt-28 pb-8 pointer-events-none">
+      
+      <!-- Heading -->
+      <div class="w-full text-center md:text-left">
+        <span class="luxury-badge">Bottomwear Collection</span>
+        <h2 class="font-heading text-4xl md:text-5xl font-light tracking-wide mt-2 text-brand-primary">
+          Premium Wide Jeans
+        </h2>
+      </div>
+
+      <!-- Layout: Left controls, Right Product Info -->
+      <div class="flex justify-between items-end w-full pb-8">
+        
+        <!-- Left Column: Dial + Recommendations -->
+        <div class="showroom-left-col flex flex-col space-y-4 pointer-events-auto w-full max-w-[280px] z-30">
+          
+          <!-- Circular Dial Selector -->
+          <div class="dial-container">
+            <div class="dial-pivot" id="bottomwear-dial">
+              <!-- JS will inject .dial-item elements here -->
+            </div>
+            <!-- Category Title inside Dial -->
+            <div class="dial-category-label">
+              <span class="font-heading text-sm md:text-lg font-light tracking-widest uppercase text-brand-primary whitespace-nowrap">Bottom Wear</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Side: Product details panel -->
+        <div class="showroom-right-col w-full max-w-md md:max-w-sm md:ml-auto md:mr-0 glass-panel p-6 shadow-xl border border-white/40 pointer-events-auto z-30">
+          <span class="text-xs uppercase tracking-widest text-brand-accent font-semibold" id="showcase-fabric">13.5oz Rigid Japanese Denim</span>
+          <h3 class="font-heading text-2xl md:text-3xl font-light mt-1" id="showcase-title">Light Blue Wide Fit</h3>
+          <p class="text-xs text-brand-secondary mt-2 font-body leading-relaxed" id="showcase-desc">
+            Designed with a classic mid-rise and straight, wide leg silhouette. Crafted from authentic raw Japanese denim and washed to a beautiful vintage light-indigo hue.
+          </p>
+          <div class="flex justify-between items-center mt-4 pt-4 border-t border-brand-primary/5">
+            <span class="font-heading text-2xl font-semibold" id="showcase-price">₹2,299</span>
+            <div class="flex space-x-1" id="showcase-sizes">
+              <!-- Sizes filled by JS -->
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-6">
+            <a id="showcase-enquire-btn" href="#" target="_blank" class="w-full text-center py-2.5 bg-brand-primary text-white text-xs font-semibold tracking-widest uppercase hover:bg-brand-accent transition duration-300">
+              Enquire
+            </a>
+            <button id="showcase-reserve-btn" class="w-full py-2.5 border border-brand-primary text-brand-primary text-xs font-semibold tracking-widest uppercase hover:bg-brand-primary hover:text-white transition duration-300">
+              Reserve
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <!-- ==========================================
+       EDITORIAL SHOWCASE SECTIONS (Standard Scroll)
+       ========================================== -->
+
+  <!-- SECTION 4: UPPERWEAR COLLECTION -->
+  <section id="upperwear-collection" class="py-24 px-6 md:px-12 bg-white relative z-30 border-t border-brand-primary/5">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 animate-on-scroll">
+        <div>
+          <span class="luxury-badge">Editorial Gallery</span>
+          <h2 class="font-heading text-4xl md:text-5xl font-light tracking-wide mt-2">Upperwear Selection</h2>
+        </div>
+        <p class="text-brand-secondary text-sm font-light max-w-sm mt-4 md:mt-0 leading-relaxed font-body">
+          Explore the silhouettes, fabrics, and fits that define Ansari Garments' contemporary curation.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="upperwear-grid">
+        <!-- Dynamic products will be rendered by script.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: FEATURED COLLECTION (Grid Layout) -->
+  <section id="featured-collection" class="py-24 px-6 md:px-12 bg-brand-bg relative z-30">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col items-center text-center mb-16 animate-on-scroll">
+        <span class="luxury-badge">Signature Pieces</span>
+        <h2 class="font-heading text-4xl md:text-5xl font-light tracking-wide mt-2">Curated Lookbook</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="bottomwear-grid">
+        <!-- Dynamic products will be rendered by script.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: CRAFTSMANSHIP -->
+  <section id="craftsmanship" class="py-24 px-6 md:px-12 bg-white relative z-30 border-t border-brand-primary/5">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6 animate-on-scroll">
+          <span class="luxury-badge">The Ansari Philosophy</span>
+          <h2 class="font-heading text-4xl md:text-5xl font-light tracking-wide leading-tight">
+            Crafted For the Modern Man
+          </h2>
+          <p class="text-brand-secondary text-sm font-light leading-relaxed font-body">
+            At Ansari Garments, we believe that menswear should be simple, premium, and enduring. We source only the finest fabrics—heavy-gauge washed cotton canvas, rigid Japanese selvedge denim, and lightweight Italian cambric linen. 
+          </p>
+          <p class="text-brand-secondary text-sm font-light leading-relaxed font-body">
+            Every seam is reinforced with double-needle tailoring, and all silhouettes are patterned with contemporary relaxed proportions designed to drape naturally. This curated collection moves away from crowded wholesale racks and focuses on tailored, minimal, and high-impact style.
+          </p>
+          
+          <div class="grid grid-cols-2 gap-6 pt-4 text-left border-t border-brand-primary/10">
+            <div>
+              <h4 class="font-heading text-2xl font-light text-brand-accent">Fine Fabrics</h4>
+              <p class="text-xs text-brand-secondary mt-1">100% natural, high-density cotton, linen, and denim.</p>
+            </div>
+            <div>
+              <h4 class="font-heading text-2xl font-light text-brand-accent">Modern Fits</h4>
+              <p class="text-xs text-brand-secondary mt-1">Wide-leg drapes and relaxed tailored upperwear.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative h-[480px] bg-brand-bg overflow-hidden shadow-xl rounded-lg animate-on-scroll">
+          <img src="Assets/pink-linen-shirt-editorial.jpg" alt="Fabric Detail" class="w-full h-full object-cover editorial-img">
+          <div class="absolute inset-0 bg-brand-primary/5 mix-blend-multiply"></div>
+          <div class="absolute bottom-6 left-6 glass-panel p-4 max-w-xs border border-white/20">
+            <span class="text-[0.65rem] tracking-widest uppercase font-semibold text-brand-accent">Details Spec</span>
+            <p class="font-heading text-lg font-light mt-1">Rigid Stitching & Custom Suede Hardware Trims</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: LOOKBOOK -->
+  <section id="lookbook" class="py-24 px-6 md:px-12 bg-brand-bg relative z-30">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col items-center text-center mb-16 animate-on-scroll">
+        <span class="luxury-badge">Campaign Photography</span>
+        <h2 class="font-heading text-4xl md:text-5xl font-light tracking-wide mt-2">Summer '26 Lookbook</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Look 1 -->
+        <div class="relative h-[550px] group overflow-hidden shadow-lg animate-on-scroll">
+          <img src="Assets/look-01-urban-nomad.jpg" alt="Look 1" class="w-full h-full object-cover transition duration-700 group-hover:scale-105 filter brightness-95">
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-primary/80 via-transparent to-transparent flex flex-col justify-end p-8 text-white">
+            <span class="text-xs uppercase tracking-widest text-brand-accent font-semibold">Look 01</span>
+            <h4 class="font-heading text-3xl font-light mt-1">Urban Nomad</h4>
+            <p class="text-xs text-white/70 mt-2 font-light max-w-xs">Beige Workwear Jacket paired with Light Blue Wide Fit Jeans.</p>
+            <button onclick="openReservationModal('Look 01 (Beige Jacket + Light Blue Jeans)')" class="mt-4 self-start px-4 py-2 border border-white/30 text-xs tracking-wider uppercase font-semibold hover:bg-white hover:text-brand-primary transition">Reserve Outfit</button>
+          </div>
+        </div>
+
+        <!-- Look 2 -->
+        <div class="relative h-[550px] group overflow-hidden shadow-lg animate-on-scroll">
+          <img src="Assets/look-02-minimalist-prep.jpg" alt="Look 2" class="w-full h-full object-cover transition duration-700 group-hover:scale-105 filter brightness-95">
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-primary/80 via-transparent to-transparent flex flex-col justify-end p-8 text-white">
+            <span class="text-xs uppercase tracking-widest text-brand-accent font-semibold">Look 02</span>
+            <h4 class="font-heading text-3xl font-light mt-1">Minimalist Prep</h4>
+            <p class="text-xs text-white/70 mt-2 font-light max-w-xs">Midnight Plaid Flannel paired with Slate Grey Wide Fit Jeans.</p>
+            <button onclick="openReservationModal('Look 02 (Midnight Plaid + Slate Grey Jeans)')" class="mt-4 self-start px-4 py-2 border border-white/30 text-xs tracking-wider uppercase font-semibold hover:bg-white hover:text-brand-primary transition">Reserve Outfit</button>
+          </div>
+        </div>
+
+        <!-- Look 3 -->
+        <div class="relative h-[550px] group overflow-hidden shadow-lg animate-on-scroll">
+          <img src="Assets/look-03-classic-denim.jpg" alt="Look 3" class="w-full h-full object-cover transition duration-700 group-hover:scale-105 filter brightness-95">
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-primary/80 via-transparent to-transparent flex flex-col justify-end p-8 text-white">
+            <span class="text-xs uppercase tracking-widest text-brand-accent font-semibold">Look 03</span>
+            <h4 class="font-heading text-3xl font-light mt-1">Classic Denim</h4>
+            <p class="text-xs text-white/70 mt-2 font-light max-w-xs">Slate Grey Stripe Shirt paired with Relaxed Wide Fit Jeans.</p>
+            <button onclick="openReservationModal('Look 03 (Grey Stripe Shirt + Relaxed Jeans)')" class="mt-4 self-start px-4 py-2 border border-white/30 text-xs tracking-wider uppercase font-semibold hover:bg-white hover:text-brand-primary transition">Reserve Outfit</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: VISIT OUR STORE -->
+  <section id="visit-store" class="py-24 px-6 md:px-12 bg-white relative z-30 border-t border-brand-primary/5">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        
+        <!-- Store Image (enhanced) -->
+        <div class="relative h-[480px] bg-brand-bg overflow-hidden shadow-xl rounded-lg animate-on-scroll group">
+          <img src="Assets/storefront.jpg" alt="Ansari Garments Store front" class="w-full h-full object-cover editorial-img brightness-90 contrast-105">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <div class="absolute bottom-8 left-8 text-white">
+            <span class="text-xs uppercase tracking-widest text-brand-accent font-bold">Authorized Retail Store</span>
+            <h3 class="font-heading text-3xl font-light mt-1">Ansari Garments</h3>
+            <p class="text-xs text-white/80 mt-1">Kasia Road, Ramkola, Uttar Pradesh, India</p>
+          </div>
+        </div>
+
+        <!-- Store information and Map -->
+        <div class="space-y-6 animate-on-scroll">
+          <span class="luxury-badge">Visit Store</span>
+          <h2 class="font-heading text-4xl md:text-5xl font-light tracking-wide">
+            Location & Hours
+          </h2>
+          
+          <div class="space-y-4">
+            <div class="flex items-start space-x-3">
+              <svg class="w-5 h-5 text-brand-accent mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <div>
+                <h4 class="font-semibold text-sm">Address</h4>
+                <p class="text-xs text-brand-secondary mt-1">Kasia Road, Ramkola, Uttar Pradesh, India</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <svg class="w-5 h-5 text-brand-accent mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <div>
+                <h4 class="font-semibold text-sm">Store Timings</h4>
+                <p class="text-xs text-brand-secondary mt-1">8:30 AM – 9:00 PM (Everyday)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Map placeholder / responsive embed -->
+          <div class="w-full h-[220px] rounded-lg overflow-hidden border border-brand-primary/10 shadow-inner">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3556.7029562725916!2d83.83405787624916!3d26.91295247664654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3993e5002a24ef93%3A0xc3c545de2ff57e4e!2sRamkola%2C%20Uttar%20Pradesh%20274305!5e0!3m2!1sen!2sin!4v1717835154320!5m2!1sen!2sin" 
+              class="w-full h-full border-0" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+
+          <a href="https://maps.google.com/?q=Ansari+Garments+Kasia+Road+Ramkola" target="_blank" class="inline-block px-6 py-3 bg-brand-primary text-white text-xs font-semibold tracking-widest uppercase hover:bg-brand-accent transition duration-300">
+            Get Directions
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 9: INSTAGRAM -->
+  <section id="instagram-grid" class="py-24 px-6 md:px-12 bg-brand-bg relative z-30">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col items-center text-center mb-16 animate-on-scroll">
+        <span class="luxury-badge">Social Journal</span>
+        <h2 class="font-heading text-4xl md:text-5xl font-light tracking-wide mt-2">Instagram Feed</h2>
+        <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="text-brand-accent text-xs font-semibold tracking-widest uppercase mt-4 hover:underline">@ansari_garments_01</a>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Post 1 -->
+        <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="relative group aspect-square bg-[#eae8e4] overflow-hidden block animate-on-scroll">
+          <img src="Assets/vintage-washed-work-jacket.jpg" alt="Instagram Post 1" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          <div class="absolute inset-0 bg-brand-primary/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </div>
+        </a>
+ 
+        <!-- Post 2 -->
+        <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="relative group aspect-square bg-[#eae8e4] overflow-hidden block animate-on-scroll">
+          <img src="Assets/midnight-plaid-flannel-editorial.jpg" alt="Instagram Post 2" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          <div class="absolute inset-0 bg-brand-primary/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </div>
+        </a>
+ 
+        <!-- Post 3 -->
+        <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="relative group aspect-square bg-[#eae8e4] overflow-hidden block animate-on-scroll">
+          <img src="Assets/mid-rise-wide-jeans-ash-black.jpg" alt="Instagram Post 3" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          <div class="absolute inset-0 bg-brand-primary/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </div>
+        </a>
+ 
+        <!-- Post 4 -->
+        <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="relative group aspect-square bg-[#eae8e4] overflow-hidden block animate-on-scroll">
+          <img src="Assets/pink-linen-shirt-editorial.jpg" alt="Instagram Post 4" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          <div class="absolute inset-0 bg-brand-primary/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10: CONTACT / FOOTER -->
+  <footer id="contact" class="bg-brand-primary text-white py-16 px-6 md:px-12 relative z-30">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-white/10 pb-12">
+      
+      <!-- Brand Info -->
+      <div class="space-y-4">
+        <h3 class="font-heading text-3xl font-bold tracking-widest uppercase">Ansari Garments</h3>
+        <p class="text-xs text-white/60 font-body leading-relaxed max-w-sm">
+          A premium fashion digital showroom redefining menswear. Discover fine fabric curations, rigid denim, and lightweight layers.
+        </p>
+        <div class="pt-2 flex space-x-4">
+          <a href="https://www.instagram.com/ansari_garments_01" target="_blank" class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-brand-primary transition">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="space-y-4 text-xs font-semibold tracking-widest uppercase">
+        <h4 class="text-white/40 text-[0.65rem] tracking-[0.2em]">Showroom</h4>
+        <div class="flex flex-col space-y-2.5">
+          <a href="#showroom-track" class="hover:text-brand-accent transition">Collection</a>
+          <a href="#outfit-builder-section" class="hover:text-brand-accent transition">Outfit Builder</a>
+          <a href="#craftsmanship" class="hover:text-brand-accent transition">Craftsmanship</a>
+          <a href="#visit-store" class="hover:text-brand-accent transition">Visit Store</a>
+        </div>
+      </div>
+
+      <!-- Contact Info & CTAs -->
+      <div class="space-y-4">
+        <h4 class="text-white/40 text-[0.65rem] tracking-[0.2em] uppercase font-semibold">Inquiries</h4>
+        <p class="text-sm font-semibold text-brand-accent font-heading text-xl">WhatsApp: +91 9044506599</p>
+        <p class="text-xs text-white/60">Kasia Road, Ramkola, Uttar Pradesh, India</p>
+        <div class="pt-2 flex flex-wrap gap-2.5">
+          <a href="https://wa.me/9044506599" target="_blank" class="px-5 py-2.5 bg-brand-accent text-white text-xs font-semibold tracking-wider uppercase hover:bg-white hover:text-brand-primary transition duration-300">
+            Chat on WhatsApp
+          </a>
+          <a href="#visit-store" class="px-5 py-2.5 border border-white/20 text-white text-xs font-semibold tracking-wider uppercase hover:bg-white hover:text-brand-primary transition duration-300">
+            Visit Store
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Copyright -->
+    <div class="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-white/40 gap-4">
+      <p>&copy; 2026 Ansari Garments. All Rights Reserved.</p>
+      <div class="flex space-x-6">
+        <a href="/admin.html" class="hover:text-brand-accent transition">Admin Dashboard</a>
+        <span>Designed Editorial</span>
+        <span>Premium Curated</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================
+       PRODUCT RESERVATION MODAL
+       ========================================== -->
+  <div id="reservation-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-center justify-center p-4">
+    <div class="modal-content bg-white w-full max-w-md p-8 shadow-2xl relative border border-brand-primary/10 rounded-lg">
+      <button onclick="closeReservationModal()" class="absolute top-5 right-5 text-brand-primary/60 hover:text-brand-primary focus:outline-none">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <span class="luxury-badge">Reserve Item</span>
+      <h3 class="font-heading text-3xl font-light mt-2 mb-6">Reservation Details</h3>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-brand-secondary font-semibold mb-1">Selected Item</label>
+          <input type="text" id="modal-product-name" readonly class="w-full px-4 py-2 bg-brand-bg border border-brand-primary/10 text-sm font-semibold focus:outline-none" value="">
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-brand-secondary font-semibold mb-1">Your Name</label>
+          <input type="text" id="modal-user-name" placeholder="Enter your full name" class="w-full px-4 py-2 border border-brand-primary/10 text-sm focus:outline-none focus:border-brand-accent transition">
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-brand-secondary font-semibold mb-1">Size Needed</label>
+          <input type="text" id="modal-size" placeholder="e.g. M, L, 32, 34" class="w-full px-4 py-2 border border-brand-primary/10 text-sm focus:outline-none focus:border-brand-accent transition">
+        </div>
+        
+        <p class="text-[0.7rem] text-brand-secondary leading-relaxed pt-2">
+          *Note: Submitting this form will open WhatsApp to send your reservation request directly to our team. The item will be held for you at our Ramkola store.
+        </p>
+      </div>
+
+      <div class="mt-8 flex gap-3">
+        <button onclick="submitReservation()" class="w-full py-3 bg-brand-primary text-white text-xs font-semibold tracking-widest uppercase hover:bg-brand-accent transition duration-300">
+          Confirm Reservation
+        </button>
+        <button onclick="closeReservationModal()" class="w-full py-3 border border-brand-primary/20 text-brand-primary text-xs font-semibold tracking-widest uppercase hover:bg-brand-bg transition duration-300">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- UI Controller script -->
+  <script src="js/script.js"></script>
+
+</body>
+</html>

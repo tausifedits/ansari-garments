@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ansari Garments - Interactive Asset Mapper</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #F7F5F2;
+      color: #1F2937;
+    }
+  </style>
+</head>
+<body class="p-8 font-sans">
+  <div class="max-w-7xl mx-auto">
+    <header class="flex justify-between items-center mb-8 border-b pb-4">
+      <div>
+        <h1 class="text-3xl font-serif font-bold">Ansari Garments</h1>
+        <p class="text-gray-500 text-sm">Interactive Visual Asset Mapper — Link transparent images to product IDs</p>
+      </div>
+      <button id="save-btn" class="px-6 py-3 bg-gray-900 text-white font-semibold rounded hover:bg-amber-700 transition shadow-md">
+        Save Mapping
+      </button>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="grid">
+      <!-- Cards will be populated here -->
+    </div>
+  </div>
+
+  <script>
+    const imageFiles = [
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_24_52 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_27_43 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_30_20 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_33_02 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_39_58 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_51_19 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_53_30 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 08_56_50 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 09_01_48 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 09_04_01 AM.png",
+      "Assets/TopWear/ChatGPT Image Jun 9, 2026, 09_07_31 AM.png",
+      "Assets/Bottom Wear/ChatGPT Image Jun 9, 2026, 09_13_23 AM.png",
+      "Assets/Bottom Wear/ChatGPT Image Jun 9, 2026, 09_16_08 AM.png",
+      "Assets/Bottom Wear/ChatGPT Image Jun 9, 2026, 09_20_08 AM.png",
+      "Assets/Bottom Wear/ChatGPT Image Jun 9, 2026, 09_22_20 AM.png",
+      "Assets/Bottom Wear/ChatGPT Image Jun 9, 2026, 09_25_45 AM.png"
+    ];
+
+
+    const products = {
+      tops: [
+        { id: 'beige-jacket', name: 'Beige Workwear Jacket' },
+        { id: 'beige-plaid', name: 'Beige Plaid Overshirt' },
+        { id: 'blue-plaid', name: 'Midnight Plaid Flannel' },
+        { id: 'green-knitwear', name: 'Forest Green Stripe Knitwear' },
+        { id: 'grey-stripe', name: 'Slate Grey Stripe Shirt' }
+      ],
+      bottoms: [
+        { id: 'light-blue', name: 'Light Blue Wide Fit Jeans' },
+        { id: 'relaxed-wide', name: 'Relaxed Wide Fit Jeans' },
+        { id: 'black-wide', name: 'Ash Black Wide Fit Jeans' },
+        { id: 'grey-wide', name: 'Slate Grey Wide Fit Jeans' }
+      ]
+    };
+
+    // Load existing mapping if any
+    let currentMapping = {};
+    fetch('mapping.json')
+      .then(res => res.json())
+      .then(data => {
+        currentMapping = data || {};
+        renderGrid();
+      })
+      .catch(() => {
+        renderGrid();
+      });
+
+    function renderGrid() {
+      const container = document.getElementById('grid');
+      container.innerHTML = '';
+
+      imageFiles.forEach((path, index) => {
+        const existingVal = currentMapping[path] || { type: 'ignore' };
+
+        const card = document.createElement('div');
+        card.className = "bg-white border rounded-lg shadow-sm overflow-hidden flex flex-col p-4 justify-between transition hover:shadow-md";
+
+        // Image container with checkboard background for transparent items
+        const imgWrapper = document.createElement('div');
+        imgWrapper.className = "w-full h-48 bg-gray-200 rounded relative mb-4 flex items-center justify-center overflow-hidden";
+        imgWrapper.style.backgroundImage = "radial-gradient(#ccc 1px, transparent 0), radial-gradient(#ccc 1px, transparent 0)";
+        imgWrapper.style.backgroundSize = "16px 16px";
+        imgWrapper.style.backgroundPosition = "0 0, 8px 8px";
+
+        const img = document.createElement('img');
+        img.src = path;
+        img.className = "max-w-full max-h-full object-contain";
+        imgWrapper.appendChild(img);
+
+        const details = document.createElement('div');
+        details.className = "space-y-3";
+
+        const title = document.createElement('div');
+        title.className = "text-xs font-mono break-all text-gray-400 mb-2";
+        title.innerText = path.split('/').pop();
+
+
+        // Type Selector
+        const typeLabel = document.createElement('label');
+        typeLabel.className = "block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1";
+        typeLabel.innerText = "Classification";
+        
+        const typeSelect = document.createElement('select');
+        typeSelect.className = "w-full p-2 border text-sm rounded bg-gray-50 focus:border-amber-700 outline-none";
+        typeSelect.id = `type-${index}`;
+        
+        const optIgnore = document.createElement('option');
+        optIgnore.value = 'ignore';
+        optIgnore.innerText = 'Skip / Other';
+        
+        const optTop = document.createElement('option');
+        optTop.value = 'top';
+        optTop.innerText = 'Top Wear (Shirt/Jacket)';
+
+        const optBottom = document.createElement('option');
+        optBottom.value = 'bottom';
+        optBottom.innerText = 'Bottom Wear (Jeans)';
+
+        const optCombo = document.createElement('option');
+        optCombo.value = 'combo';
+        optCombo.innerText = 'Combination (Top + Bottom)';
+
+        typeSelect.appendChild(optIgnore);
+        typeSelect.appendChild(optTop);
+        typeSelect.appendChild(optBottom);
+        typeSelect.appendChild(optCombo);
+
+        typeSelect.value = existingVal.type;
+
+        // Product Sub-Selectors
+        const productSelectWrapper = document.createElement('div');
+        productSelectWrapper.id = `product-select-wrapper-${index}`;
+
+        details.appendChild(title);
+        details.appendChild(typeLabel);
+        details.appendChild(typeSelect);
+        details.appendChild(productSelectWrapper);
+
+        card.appendChild(imgWrapper);
+        card.appendChild(details);
+        container.appendChild(card);
+
+        // Event listener for classification type change
+        typeSelect.addEventListener('change', () => {
+          updateProductSelectors(index, typeSelect.value, existingVal.id);
+        });
+
+        // Initial setup of product selectors
+        updateProductSelectors(index, existingVal.type, existingVal);
+      });
+    }
+
+    function updateProductSelectors(index, type, valueObj) {
+      const wrapper = document.getElementById(`product-select-wrapper-${index}`);
+      wrapper.innerHTML = '';
+
+      if (type === 'top') {
+        const select = document.createElement('select');
+        select.className = "w-full p-2 border text-sm rounded bg-gray-50 mt-2 focus:border-amber-700 outline-none";
+        select.id = `select-top-${index}`;
+        products.tops.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.innerText = p.name;
+          select.appendChild(opt);
+        });
+        if (valueObj && valueObj.type === 'top') {
+          select.value = valueObj.id;
+        }
+        wrapper.appendChild(select);
+      } else if (type === 'bottom') {
+        const select = document.createElement('select');
+        select.className = "w-full p-2 border text-sm rounded bg-gray-50 mt-2 focus:border-amber-700 outline-none";
+        select.id = `select-bottom-${index}`;
+        products.bottoms.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.innerText = p.name;
+          select.appendChild(opt);
+        });
+        if (valueObj && valueObj.type === 'bottom') {
+          select.value = valueObj.id;
+        }
+        wrapper.appendChild(select);
+      } else if (type === 'combo') {
+        // Dropdown for Top
+        const labelTop = document.createElement('label');
+        labelTop.className = "block text-2xs text-gray-400 mt-2";
+        labelTop.innerText = "Select Shirt:";
+        
+        const selectTop = document.createElement('select');
+        selectTop.className = "w-full p-2 border text-sm rounded bg-gray-50 focus:border-amber-700 outline-none";
+        selectTop.id = `select-combo-top-${index}`;
+        products.tops.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.innerText = p.name;
+          selectTop.appendChild(opt);
+        });
+
+        // Dropdown for Bottom
+        const labelBottom = document.createElement('label');
+        labelBottom.className = "block text-2xs text-gray-400 mt-2";
+        labelBottom.innerText = "Select Pants:";
+
+        const selectBottom = document.createElement('select');
+        selectBottom.className = "w-full p-2 border text-sm rounded bg-gray-50 focus:border-amber-700 outline-none";
+        selectBottom.id = `select-combo-bottom-${index}`;
+        products.bottoms.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.innerText = p.name;
+          selectBottom.appendChild(opt);
+        });
+
+        if (valueObj && valueObj.type === 'combo') {
+          selectTop.value = valueObj.topId;
+          selectBottom.value = valueObj.bottomId;
+        }
+
+        wrapper.appendChild(labelTop);
+        wrapper.appendChild(selectTop);
+        wrapper.appendChild(labelBottom);
+        wrapper.appendChild(selectBottom);
+      }
+    }
+
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const mapping = {};
+      imageFiles.forEach((path, index) => {
+        const type = document.getElementById(`type-${index}`).value;
+
+        
+        if (type === 'top') {
+          const id = document.getElementById(`select-top-${index}`).value;
+          mapping[path] = { type, id };
+        } else if (type === 'bottom') {
+          const id = document.getElementById(`select-bottom-${index}`).value;
+          mapping[path] = { type, id };
+        } else if (type === 'combo') {
+          const topId = document.getElementById(`select-combo-top-${index}`).value;
+          const bottomId = document.getElementById(`select-combo-bottom-${index}`).value;
+          mapping[path] = { type, topId, bottomId };
+        } else {
+          mapping[path] = { type: 'ignore' };
+        }
+      });
+
+      // Send to server
+      fetch('/save-mapping', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(mapping)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('Asset mappings successfully saved to mapping.json!');
+        } else {
+          alert('Failed to save mapping: ' + data.error);
+        }
+      })
+      .catch(err => {
+        alert('Network error while saving mapping: ' + err.message);
+      });
+    });
+  </script>
+</body>
+</html>

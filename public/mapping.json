@@ -1,0 +1,66 @@
+{
+  "Assets/TopWear/beige-workwear-jacket.png": {
+    "type": "top",
+    "id": "beige-jacket"
+  },
+  "Assets/TopWear/beige-plaid-overshirt.png": {
+    "type": "top",
+    "id": "beige-plaid"
+  },
+  "Assets/TopWear/midnight-plaid-flannel.png": {
+    "type": "top",
+    "id": "blue-plaid"
+  },
+  "Assets/TopWear/forest-green-stripe-knitwear.png": {
+    "type": "top",
+    "id": "green-knitwear"
+  },
+  "Assets/TopWear/slate-grey-stripe-shirt.png": {
+    "type": "top",
+    "id": "grey-stripe"
+  },
+  "Assets/TopWear/classic-white-linen-shirt.png": {
+    "type": "top",
+    "id": "white-linen"
+  },
+  "Assets/TopWear/olive-utility-overshirt.png": {
+    "type": "top",
+    "id": "olive-overshirt"
+  },
+  "Assets/TopWear/navy-knit-polo-shirt.png": {
+    "type": "top",
+    "id": "navy-polo"
+  },
+  "Assets/TopWear/vintage-denim-jacket.png": {
+    "type": "top",
+    "id": "denim-jacket"
+  },
+  "Assets/TopWear/onyx-heavyweight-sweatshirt.png": {
+    "type": "top",
+    "id": "black-sweatshirt"
+  },
+  "Assets/TopWear/camel-wool-blouson.png": {
+    "type": "top",
+    "id": "camel-blouson"
+  },
+  "Assets/BottomWear/light-blue-wide-fit-jeans.png": {
+    "type": "bottom",
+    "id": "light-blue"
+  },
+  "Assets/BottomWear/relaxed-wide-fit-jeans.png": {
+    "type": "bottom",
+    "id": "relaxed-wide"
+  },
+  "Assets/BottomWear/ash-black-wide-fit-jeans.png": {
+    "type": "bottom",
+    "id": "black-wide"
+  },
+  "Assets/BottomWear/slate-grey-wide-fit-jeans.png": {
+    "type": "bottom",
+    "id": "grey-wide"
+  },
+  "Assets/BottomWear/ecru-wide-fit-jeans.png": {
+    "type": "bottom",
+    "id": "ecru-wide"
+  }
+}

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ansari Garments | Inventory Admin Dashboard</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#F7F5F2',
+              card: '#FFFFFF',
+              primary: '#1F2937',
+              secondary: '#6B7280',
+              accent: '#B08968',
+            }
+          },
+          fontFamily: {
+            heading: ['Cormorant Garamond', 'serif'],
+            body: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Glassmorphism styles -->
+  <style>
+    body {
+      background-color: #F7F5F2;
+      font-family: 'Inter', sans-serif;
+    }
+    .font-heading {
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(31, 41, 55, 0.05);
+    }
+    .status-pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body class="text-brand-primary min-h-screen">
+
+  <!-- Authentication Screen Overlay -->
+  <div id="auth-overlay" class="fixed inset-0 z-55 bg-[#F7F5F2] flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md p-8 shadow-2xl relative border border-brand-primary/10 rounded-lg text-center space-y-6">
+      <div class="space-y-2">
+        <span class="luxury-badge">Security Access</span>
+        <h2 class="font-heading text-4xl font-light mt-2 text-brand-primary">Authorized Staff</h2>
+        <p class="text-xs text-brand-secondary uppercase tracking-widest leading-relaxed">Enter your admin security access key to unlock showroom controls.</p>
+      </div>
+
+      <div class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-2">Access Key</label>
+          <input type="password" id="auth-key-input" placeholder="••••••••••••" class="w-full px-4 py-3 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition text-center tracking-widest">
+        </div>
+        <p id="auth-error-msg" class="text-xs text-rose-700 uppercase tracking-wider text-center font-bold hidden">Invalid Access Key. Please try again.</p>
+      </div>
+
+      <button onclick="attemptAuthentication()" class="w-full py-3.5 bg-brand-primary text-white text-xs font-semibold tracking-widest uppercase hover:bg-brand-accent transition duration-300 shadow-lg">
+        Unlock Dashboard
+      </button>
+
+      <div class="pt-4 border-t border-brand-primary/5">
+        <a href="/" class="text-xs text-brand-secondary hover:text-brand-primary transition uppercase tracking-widest font-semibold flex items-center justify-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Return to Storefront
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="border-b border-brand-primary/5 bg-white/80 backdrop-blur-md sticky top-0 z-40 px-4 md:px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2 sm:space-x-4">
+      <a href="/" class="font-heading text-lg md:text-2xl font-bold tracking-[0.1em] md:tracking-[0.15em] uppercase">
+        Ansari Garments
+      </a>
+      <span class="hidden sm:inline-block text-[0.65rem] md:text-xs px-2 py-1 bg-brand-primary/5 text-brand-secondary tracking-widest uppercase">
+        Admin Console
+      </span>
+    </div>
+    
+    <div class="flex items-center space-x-2 md:space-x-6">
+      <!-- WS status badge -->
+      <div id="sync-status" class="flex items-center space-x-2 text-xs font-semibold tracking-wider text-brand-secondary bg-brand-bg px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full border border-brand-primary/5">
+        <span id="sync-indicator" class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-red-500 status-pulse"></span>
+        <span id="sync-text" class="hidden md:inline">Sync Offline</span>
+      </div>
+      
+      <a href="/" class="px-2.5 py-1.5 md:px-4 md:py-2 border border-brand-primary text-[0.7rem] md:text-xs font-semibold tracking-widest uppercase hover:bg-brand-primary hover:text-white transition duration-300 whitespace-nowrap">
+        View Storefront
+      </a>
+      <button onclick="logoutAdmin()" class="px-2.5 py-1.5 md:px-4 md:py-2 border border-rose-700/30 text-rose-700 text-[0.7rem] md:text-xs font-semibold tracking-widest uppercase hover:bg-rose-700 hover:text-white transition duration-300 whitespace-nowrap">
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto p-6 md:p-8 space-y-8">
+    
+    <!-- Header Block -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-brand-primary/5 pb-6">
+      <div>
+        <h1 class="font-heading text-4xl md:text-5xl font-light">Inventory Manager</h1>
+        <p class="text-xs text-brand-secondary uppercase tracking-widest mt-1">Add, update, or remove garments from showroom database in real-time.</p>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass-card p-6 shadow-sm rounded-lg flex flex-col justify-between">
+        <span class="text-xs uppercase tracking-widest text-brand-secondary font-semibold">Total Collection</span>
+        <span class="text-4xl font-heading font-light mt-2" id="stat-total">0 Items</span>
+      </div>
+      <div class="glass-card p-6 shadow-sm rounded-lg flex flex-col justify-between">
+        <span class="text-xs uppercase tracking-widest text-brand-secondary font-semibold">Active Showroom</span>
+        <span class="text-4xl font-heading font-light mt-2 text-emerald-700" id="stat-visible">0 Visible</span>
+      </div>
+      <div class="glass-card p-6 shadow-sm rounded-lg flex flex-col justify-between">
+        <span class="text-xs uppercase tracking-widest text-brand-secondary font-semibold">Stock Warnings</span>
+        <span class="text-4xl font-heading font-light mt-2 text-amber-700" id="stat-stock-warning">0 Low/Out</span>
+      </div>
+    </div>
+
+    <!-- Master Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left 2 Cols: Inventory List -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="glass-card shadow-sm rounded-lg overflow-hidden border border-brand-primary/5">
+          <div class="px-6 py-4 border-b border-brand-primary/5 bg-white flex justify-between items-center">
+            <h2 class="font-heading text-2xl font-light">Showroom Catalog</h2>
+            <div class="flex space-x-2">
+              <button onclick="filterCatalog('all')" id="filter-all" class="px-3 py-1 text-xs font-semibold tracking-wider uppercase border border-brand-primary bg-brand-primary text-white transition">All</button>
+              <button onclick="filterCatalog('top')" id="filter-top" class="px-3 py-1 text-xs font-semibold tracking-wider uppercase border border-brand-primary/10 hover:border-brand-primary transition">Tops</button>
+              <button onclick="filterCatalog('bottom')" id="filter-bottom" class="px-3 py-1 text-xs font-semibold tracking-wider uppercase border border-brand-primary/10 hover:border-brand-primary transition">Bottoms</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse block md:table">
+              <thead class="hidden md:table-header-group">
+                <tr class="bg-brand-bg text-[0.65rem] text-brand-secondary font-bold tracking-widest uppercase border-b border-brand-primary/5">
+                  <th class="px-6 py-4">Product</th>
+                  <th class="px-4 py-4">Fabric</th>
+                  <th class="px-4 py-4">Price</th>
+                  <th class="px-4 py-4 text-center">Stock</th>
+                  <th class="px-4 py-4 text-center">Visibility</th>
+                  <th class="px-4 py-4 text-center">Show in Dial</th>
+                  <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-list" class="divide-y divide-brand-primary/5 text-sm block md:table-row-group">
+                <!-- Injected dynamically by JS -->
+                <tr class="block md:table-row">
+                  <td colspan="7" class="px-6 py-8 text-center text-brand-secondary block md:table-cell">Loading product inventory...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-1">
+        <div class="glass-card shadow-sm rounded-lg border border-brand-primary/5 p-6 space-y-6 lg:sticky lg:top-24">
+          <div>
+            <h2 class="font-heading text-2xl font-light" id="form-title">Add New Product</h2>
+            <p class="text-xs text-brand-secondary uppercase tracking-widest mt-1">Specify garment detail records.</p>
+          </div>
+
+          <form id="product-form" onsubmit="saveProduct(event)" class="space-y-4">
+            <input type="hidden" id="form-db-id">
+            <input type="hidden" id="form-img" value="">
+
+            <div>
+              <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Product Name *</label>
+              <input type="text" id="form-name" required placeholder="e.g. Washed Chambray Shirt" class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Price (₹) *</label>
+                <input type="text" id="form-price" required placeholder="e.g. 1999" class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition">
+              </div>
+              <div>
+                <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Stock Quantity *</label>
+                <input type="number" id="form-stock" required min="0" value="10" class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Category *</label>
+                <select id="form-category" required class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition">
+                  <option value="top">Top Wear</option>
+                  <option value="bottom">Bottom Wear</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Showroom ID *</label>
+                <input type="text" id="form-custom-id" required placeholder="e.g. ivory-linen" class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Fabric Details</label>
+              <input type="text" id="form-fabric" placeholder="e.g. 100% Fine Organic Flax Linen" class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition">
+            </div>
+
+            <div>
+              <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Sizes (Comma-separated)</label>
+              <input type="text" id="form-sizes" placeholder="e.g. S, M, L, XL or 30, 32, 34" class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition">
+            </div>
+
+            <div>
+              <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Description</label>
+              <textarea id="form-description" rows="3" placeholder="A premium minimalist garment drape..." class="w-full px-3 py-2 border border-brand-primary/10 rounded bg-white text-sm focus:outline-none focus:border-brand-accent transition"></textarea>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div>
+              <label class="block text-xs uppercase tracking-widest text-brand-secondary font-semibold mb-1">Garment Image</label>
+              <div class="border-2 border-dashed border-brand-primary/10 rounded-lg p-4 bg-brand-bg hover:bg-brand-primary/5 transition cursor-pointer relative" id="drop-zone">
+                <input type="file" id="file-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleImageUpload(event)">
+                <div class="text-center space-y-2" id="upload-placeholder">
+                  <svg class="w-8 h-8 text-brand-accent mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  <p class="text-xs font-semibold text-brand-primary">Click or Drag Image Here</p>
+                  <p class="text-[0.65rem] text-brand-secondary uppercase">PNG / JPG up to 5MB</p>
+                </div>
+                <!-- Preview area -->
+                <div class="hidden flex items-center justify-between gap-4" id="upload-preview-container">
+                  <div class="w-16 h-16 bg-white border rounded overflow-hidden flex items-center justify-center">
+                    <img src="" id="upload-preview" class="max-w-full max-h-full object-contain">
+                  </div>
+                  <div class="flex-grow text-xs truncate">
+                    <p class="font-semibold text-brand-primary" id="upload-filename">Image Loaded</p>
+                    <button type="button" onclick="clearUploadedImage(event)" class="text-[0.65rem] text-rose-700 uppercase tracking-widest font-bold mt-1 hover:underline">Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <input type="checkbox" id="form-visibility" checked class="w-4 h-4 rounded text-brand-accent focus:ring-brand-accent border-brand-primary/10">
+              <label for="form-visibility" class="text-xs uppercase tracking-widest text-brand-secondary font-semibold">Publish to Public Showroom</label>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <input type="checkbox" id="form-show-in-dial" checked class="w-4 h-4 rounded text-brand-accent focus:ring-brand-accent border-brand-primary/10">
+              <label for="form-show-in-dial" class="text-xs uppercase tracking-widest text-brand-secondary font-semibold">Show in Scroll Selection Dial (Max 10)</label>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+              <button type="submit" class="w-full py-3 bg-brand-primary text-white text-xs font-semibold tracking-widest uppercase hover:bg-brand-accent transition duration-300 shadow">
+                Save Product
+              </button>
+              <button type="button" onclick="resetForm()" class="px-4 py-3 border border-brand-primary/20 text-brand-secondary text-xs font-semibold tracking-widest uppercase hover:bg-brand-bg transition duration-300">
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Scroll Trigger Manager Layout -->
+    <div class="glass-card shadow-sm rounded-lg border border-brand-primary/5 p-6 space-y-6 mt-8">
+      <div>
+        <h2 class="font-heading text-3xl font-light">Scroll Trigger Dial Manager</h2>
+        <p class="text-xs text-brand-secondary uppercase tracking-widest mt-1">Add or remove products from the interactive showroom dials (maximum of 10 items per category).</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Topwear Dial Manager -->
+        <div class="space-y-4">
+          <div class="flex justify-between items-center border-b border-brand-primary/5 pb-2">
+            <h3 class="font-heading text-xl font-light">Topwear Dial (<span id="dial-top-count">0</span>/10)</h3>
+            <div class="flex gap-2">
+              <select id="dial-top-select" class="px-2 py-1 text-xs border border-brand-primary/10 rounded bg-white focus:outline-none max-w-[150px]">
+                <!-- Injected dynamically -->
+              </select>
+              <button onclick="addSelectedToDial('top')" class="px-3 py-1 bg-brand-accent text-white text-xs font-semibold uppercase hover:bg-brand-primary transition">Add</button>
+            </div>
+          </div>
+          <div id="dial-top-list" class="space-y-2 max-h-80 overflow-y-auto pr-2">
+            <!-- Items injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Bottomwear Dial Manager -->
+        <div class="space-y-4">
+          <div class="flex justify-between items-center border-b border-brand-primary/5 pb-2">
+            <h3 class="font-heading text-xl font-light">Bottomwear Dial (<span id="dial-bottom-count">0</span>/10)</h3>
+            <div class="flex gap-2">
+              <select id="dial-bottom-select" class="px-2 py-1 text-xs border border-brand-primary/10 rounded bg-white focus:outline-none max-w-[150px]">
+                <!-- Injected dynamically -->
+              </select>
+              <button onclick="addSelectedToDial('bottom')" class="px-3 py-1 bg-brand-accent text-white text-xs font-semibold uppercase hover:bg-brand-primary transition">Add</button>
+            </div>
+          </div>
+          <div id="dial-bottom-list" class="space-y-2 max-h-80 overflow-y-auto pr-2">
+            <!-- Items injected dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

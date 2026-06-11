@@ -1,0 +1,343 @@
+/* Custom fonts and transitions */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+html {
+  scroll-behavior: smooth;
+  background-color: #F7F5F2;
+  color: #1F2937;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7F5F2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #B08968;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9c7859;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-panel-dark {
+  background: rgba(31, 41, 55, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Typography styles */
+.font-heading {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Subtle luxury animations */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s infinite ease-in-out;
+}
+
+/* Floating Garments Container & Items */
+.showroom-stage {
+  perspective: 1000px;
+}
+
+.float-item {
+  animation: float-garment 6s ease-in-out infinite;
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.08));
+}
+
+@keyframes float-garment {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(0.8deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+#active-shirt {
+  z-index: 10;
+}
+
+#active-pant {
+  z-index: 5;
+}
+
+/* Circular Selector Dial */
+.dial-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dial-pivot {
+  position: absolute;
+  left: -170px; /* Pivoted off-screen left (keeps center offset at -10px) */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  height: 320px;
+  border: 1px dashed rgba(31, 41, 55, 0.15);
+  border-radius: 50%;
+  pointer-events: auto;
+}
+
+.dial-item {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -28px;
+  margin-top: -28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-color: white;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  --angle: 0deg;
+  --r: 160px;
+  --scale: 1;
+  transform: rotate(var(--angle)) translate(var(--r)) rotate(calc(-1 * (var(--angle) + var(--parent-rotation, 0deg))));
+  scale: var(--scale);
+  transition: scale 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, opacity 0.3s;
+  pointer-events: auto;
+}
+
+.dial-item:hover {
+  --scale: 1.1;
+  border-color: rgba(176, 137, 104, 0.5);
+}
+
+.dial-item.active {
+  --scale: 1.15;
+  border-color: #B08968;
+  box-shadow: 0 8px 20px rgba(176, 137, 104, 0.25);
+  opacity: 1 !important;
+}
+
+.dial-category-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 24px;
+  pointer-events: none;
+  z-index: 30;
+}
+
+
+
+
+
+
+/* Recommendation cards */
+.rec-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(31, 41, 55, 0.05);
+}
+.rec-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(176, 137, 104, 0.25);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
+
+/* Custom image enhancements */
+.editorial-img {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
+  filter: brightness(0.97) contrast(1.02) saturate(0.95);
+}
+
+.editorial-img:hover {
+  transform: scale(1.03);
+  filter: brightness(1) contrast(1.05) saturate(1);
+}
+
+/* Text stroke for editorial layouts */
+.text-outline {
+  -webkit-text-stroke: 1px rgba(31, 41, 55, 0.2);
+  color: transparent;
+}
+
+.text-outline-white {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
+  color: transparent;
+}
+
+/* Floating overlay labels */
+.luxury-badge {
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-bottom: 1px solid #B08968;
+  padding-bottom: 2px;
+}
+
+/* ==========================================
+     RESPONSIVE RESPONSIVENESS OVERRIDES
+   ========================================== */
+
+/* Tablet & Desktop sizing adjustments */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .dial-pivot {
+    left: -137px; /* Keeps center offset at -5px */
+    width: 264px;
+    height: 264px;
+  }
+  .dial-item {
+    --r: 132px;
+  }
+}
+
+/* Mobile responsive layout overrides */
+@media (max-width: 767px) {
+  /* Hide standard headers that occupy too much space */
+  .luxury-badge {
+    font-size: 0.6rem;
+  }
+  
+  #hero-section h1, #bottomwear-section h2, #outfit-builder-section h2 {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Arrange columns absolutely on mobile so they don't block the screen center */
+  .showroom-left-col {
+    position: static !important;
+  }
+  
+  
+
+  
+  .showroom-right-col {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto !important;
+    max-width: none !important;
+    padding: 12px 16px !important;
+    z-index: 30;
+    margin: 0 !important;
+  }
+  
+  .showroom-right-col h2, .showroom-right-col h3 {
+    font-size: 1.15rem !important;
+    line-height: 1.2 !important;
+  }
+  .showroom-right-col p {
+    font-size: 0.65rem !important;
+    line-height: 1.35 !important;
+    margin-top: 4px !important;
+  }
+  .showroom-right-col .grid {
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+    gap: 8px !important;
+  }
+  .showroom-right-col a, .showroom-right-col button {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    font-size: 0.65rem !important;
+  }
+  
+  /* Compact sizes row */
+  #hero-sizes, #showcase-sizes {
+    gap: 1px !important;
+  }
+  #hero-sizes span, #showcase-sizes span {
+    padding: 2px 6px !important;
+    font-size: 0.65rem !important;
+  }
+
+  /* Dial scaling and responsive path positioning on mobile */
+  .dial-container {
+    position: absolute !important;
+    left: 0 !important;
+    right: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 100px !important;
+    height: 100px !important;
+    margin: 0 !important;
+    z-index: 25;
+    pointer-events: none;
+  }
+  
+  .dial-pivot {
+    position: absolute !important;
+    left: -80px !important; /* Pivoted off-screen left */
+    top: 50% !important;
+    transform: translateY(-50%);
+    width: 220px !important;
+    height: 220px !important;
+    pointer-events: none;
+  }
+  
+  .dial-item {
+    --r: 110px; /* Shift radius to 110px on mobile to add more space between items */
+    pointer-events: auto;
+  }
+
+  .dial-category-label {
+    left: 40px !important;
+  }
+
+  /* Hide rotation indicator on mobile to prevent overlapping active garments */
+  .dial-container > div.pointer-events-none {
+    display: none !important;
+  }
+
+
+
+  /* Center floating garment container scale down */
+  #active-garment-container {
+    max-width: 200px !important;
+    height: 40vh !important;
+    top: -20px;
+    left: 45px; /* Shifted further right to move away from circular dial */
+  }
+  
+  #active-shirt, #active-pant {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Shifting the bottomwear dial container higher up on mobile */
+  #bottomwear-section .dial-container {
+    top: 38% !important;
+  }
+
+  /* Sticky Navigation mobile adjustment */
+  nav {
+    padding: 10px 16px !important;
+  }
+  
+
+}
