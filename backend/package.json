@@ -2,10 +2,10 @@
   "name": "ansari-garments",
   "version": "1.0.0",
   "description": "Premium Garments Digital Showroom Backend & Synchronized Admin Dashboard",
-  "main": "server/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "node server/server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

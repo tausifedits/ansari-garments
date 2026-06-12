@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const config = require('./config/config');
 const Product = require('./models/Product');
-const { seedDatabase } = require('../database/seed');
+const { seedDatabase } = require('../Database/seed');
 
 const app = express();
 const server = http.createServer(app);
