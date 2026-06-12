@@ -43,7 +43,7 @@ async function startServer() {
   
   try {
     console.log('Attempting connection to local MongoDB at', MONGO_URI);
-    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 2000 });
+    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 10000 });
     console.log('Connected to local MongoDB server successfully!');
     await seedDatabase(Product);
   } catch (err) {
