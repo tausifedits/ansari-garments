@@ -51,10 +51,11 @@ async function startServer() {
       console.log('Successfully connected to MongoDB Atlas cloud!');
       await seedDatabase(Product);
     } catch (err) {
-      console.error('CRITICAL: Could not connect to MongoDB Atlas in production:', err.message);
-      process.exit(1); // Stop the server if cloud DB fails in production
+      console.error('CRITICAL DATABASE ERROR:', err); // Isse poora error print hoga
+      process.exit(1);
     }
-  } else {
+  
+  else {
     // Development Mode: Try local connection, fallback to embedded memory server
     try {
       console.log('Attempting connection to local MongoDB at', MONGO_URI);
