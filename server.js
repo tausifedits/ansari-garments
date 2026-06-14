@@ -1,0 +1,103 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const http = require('http');
+const WebSocket = require('ws');
+const path = require('path');
+const fs = require('fs');
+
+const config = require('./config/config');
+const Product = require('./models/Product');
+const { seedDatabase } = require('../database/seed');
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// Broadcast WebSocket Updates
+function broadcastUpdate() {
+  const message = JSON.stringify({ event: 'products_changed' });
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(config.PUBLIC_DIR));
+
+// Products & Upload Routes
+const productsRouter = require('./routes/products')(broadcastUpdate);
+app.use('/', productsRouter);
+
+// WebSocket Server Handlers
+wss.on('connection', (ws) => {
+  console.log('Client connected via WebSocket');
+  ws.on('close', () => console.log('Client disconnected'));
+});
+
+// Setup and start Database Connection
+// Setup and start Database Connection
+async function startServer() {
+  const MONGO_URI = config.MONGODB_URI;
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  if (isProduction) {
+    // Production Mode: Connect directly to MongoDB Atlas Cloud
+    try {
+      console.log('Production mode detected. Connecting to MongoDB Atlas...');
+      await mongoose.connect(MONGO_URI);
+      console.log('Successfully connected to MongoDB Atlas cloud!');
+      await seedDatabase(Product);
+    } catch (err) {
+      console.error('CRITICAL: Could not connect to MongoDB Atlas in production:', err.message);
+      process.exit(1); // Stop the server if cloud DB fails in production
+    }
+  } else {
+    // Development Mode: Try local connection, fallback to embedded memory server
+    try {
+      console.log('Attempting connection to local MongoDB at', MONGO_URI);
+      await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
+      console.log('Connected to local MongoDB server successfully!');
+      await seedDatabase(Product);
+    } catch (err) {
+      console.warn('Could not connect to a running local MongoDB instance:', err.message);
+      console.log('Starting local embedded MongoDB (mongodb-memory-server) in fallback mode...');
+      
+      try {
+        const dbPath = config.DB_DATA_PATH;
+        if (!fs.existsSync(dbPath)) {
+          fs.mkdirSync(dbPath, { recursive: true });
+        }
+        const { MongoMemoryServer } = require('mongodb-memory-server');
+        const mongod = await MongoMemoryServer.create({
+          instance: {
+            dbPath: dbPath,
+            storageEngine: 'wiredTiger',
+            port: 27017,
+            dbName: 'ansari_garments'
+          }
+        });
+        
+        const fallbackUri = mongod.getUri();
+        console.log('Local MongoDB Memory Server started successfully at:', fallbackUri);
+        
+        await mongoose.connect(fallbackUri);
+        console.log('Connected to embedded MongoDB fallback server!');
+        await seedDatabase(Product);
+      } catch (fallbackErr) {
+        console.error('CRITICAL: Failed to launch local database memory server:', fallbackErr.message);
+        process.exit(1);
+      }
+    }
+  }
+
+  // Start the server (using config.PORT provided by Render)
+  server.listen(config.PORT, '0.0.0.0', () => {
+    console.log(`==================================================`);
+    console.log(`Ansari Garments Showroom Server running on port ${config.PORT}`);
+    console.log(`WebSocket Server integrated and active.`);
+    console.log(`==================================================`);
+  });
+}
