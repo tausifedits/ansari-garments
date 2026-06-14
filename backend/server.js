@@ -38,53 +38,66 @@ wss.on('connection', (ws) => {
 });
 
 // Setup and start Database Connection
+// Setup and start Database Connection
 async function startServer() {
   const MONGO_URI = config.MONGODB_URI;
+  const isProduction = process.env.NODE_ENV === 'production';
   
-  try {
-    console.log('Attempting connection to local MongoDB at', MONGO_URI);
-    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 10000 });
-    console.log('Connected to local MongoDB server successfully!');
-    await seedDatabase(Product);
-  } catch (err) {
-    console.warn('Could not connect to a running local MongoDB instance:', err.message);
-    console.log('Starting local embedded MongoDB (mongodb-memory-server) in fallback mode...');
-    
+  if (isProduction) {
+    // Production Mode: Connect directly to MongoDB Atlas Cloud
     try {
-      const dbPath = config.DB_DATA_PATH;
-      if (!fs.existsSync(dbPath)) {
-        fs.mkdirSync(dbPath, { recursive: true });
-      }
-      const { MongoMemoryServer } = require('mongodb-memory-server');
-      const mongod = await MongoMemoryServer.create({
-        instance: {
-          dbPath: dbPath, // Persistent folder in database/db-data
-          storageEngine: 'wiredTiger',
-          port: 27017,
-          dbName: 'ansari_garments'
-        }
-      });
-      
-      const fallbackUri = mongod.getUri();
-      console.log('Local MongoDB Memory Server started successfully at:', fallbackUri);
-      
-      await mongoose.connect(fallbackUri);
-      console.log('Connected to embedded MongoDB fallback server!');
+      console.log('Production mode detected. Connecting to MongoDB Atlas...');
+      await mongoose.connect(MONGO_URI);
+      console.log('Successfully connected to MongoDB Atlas cloud!');
       await seedDatabase(Product);
-    } catch (fallbackErr) {
-      console.error('CRITICAL: Failed to launch local database memory server:', fallbackErr.message);
-      process.exit(1);
+    } catch (err) {
+      console.error('CRITICAL: Could not connect to MongoDB Atlas in production:', err.message);
+      process.exit(1); // Stop the server if cloud DB fails in production
+    }
+  } else {
+    // Development Mode: Try local connection, fallback to embedded memory server
+    try {
+      console.log('Attempting connection to local MongoDB at', MONGO_URI);
+      await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
+      console.log('Connected to local MongoDB server successfully!');
+      await seedDatabase(Product);
+    } catch (err) {
+      console.warn('Could not connect to a running local MongoDB instance:', err.message);
+      console.log('Starting local embedded MongoDB (mongodb-memory-server) in fallback mode...');
+      
+      try {
+        const dbPath = config.DB_DATA_PATH;
+        if (!fs.existsSync(dbPath)) {
+          fs.mkdirSync(dbPath, { recursive: true });
+        }
+        const { MongoMemoryServer } = require('mongodb-memory-server');
+        const mongod = await MongoMemoryServer.create({
+          instance: {
+            dbPath: dbPath,
+            storageEngine: 'wiredTiger',
+            port: 27017,
+            dbName: 'ansari_garments'
+          }
+        });
+        
+        const fallbackUri = mongod.getUri();
+        console.log('Local MongoDB Memory Server started successfully at:', fallbackUri);
+        
+        await mongoose.connect(fallbackUri);
+        console.log('Connected to embedded MongoDB fallback server!');
+        await seedDatabase(Product);
+      } catch (fallbackErr) {
+        console.error('CRITICAL: Failed to launch local database memory server:', fallbackErr.message);
+        process.exit(1);
+      }
     }
   }
 
+  // Start the server (using config.PORT provided by Render)
   server.listen(config.PORT, '0.0.0.0', () => {
     console.log(`==================================================`);
-    console.log(`Ansari Garments Showroom Server running at:`);
-    console.log(`- Web App: http://localhost:${config.PORT}/`);
-    console.log(`- Admin panel: http://localhost:${config.PORT}/admin.html`);
+    console.log(`Ansari Garments Showroom Server running on port ${config.PORT}`);
     console.log(`WebSocket Server integrated and active.`);
     console.log(`==================================================`);
   });
 }
-
-startServer();
