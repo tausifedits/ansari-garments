@@ -214,3 +214,32 @@ module.exports = {
   initialProducts,
   seedDatabase
 };
+
+if (require.main === module) {
+  const path = require('path');
+  module.paths.push(path.join(__dirname, '../backend/node_modules'));
+
+  const mongoose = require('mongoose');
+  const Product = require('../backend/models/Product');
+  const config = require('../backend/config/config');
+
+  console.log('Running manual database seeding script...');
+  
+  if (!config.MONGODB_URI) {
+    console.error('Error: MONGODB_URI is not set in config.');
+    process.exit(1);
+  }
+
+  mongoose.connect(config.MONGODB_URI)
+    .then(async () => {
+      console.log('Connected to MongoDB successfully for seeding.');
+      await seedDatabase(Product);
+      await mongoose.disconnect();
+      console.log('Disconnected from MongoDB. Seeding process complete.');
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('Failed to connect to MongoDB for seeding:', err);
+      process.exit(1);
+    });
+}
